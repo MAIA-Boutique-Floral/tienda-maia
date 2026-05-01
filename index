@@ -733,26 +733,66 @@ Continuar con mi pedido →
 //  DATOS DEL SERVIDOR
 // ═══════════════════════════════════════════════════════════
 // ══════════════════════════════════════════════════════════════════
-// ⚙️  CONFIGURACIÓN — REEMPLAZA ESTA URL CON TU URL DE APPS SCRIPT
-//     (Menú Implementar → Nueva implementación → Aplicación web →
-//      Copiar URL generada y pégala aquí)
+// ⚙️  URL DE APPS SCRIPT — YA CONFIGURADA
 // ══════════════════════════════════════════════════════════════════
-var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx1s4EapgBVYGE8c7UpGlraD06-yqoZBz3pXOsnyoOsjyf1mQOeLaDTZAh4qBTQ38M/exec';
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX0ZQTTju-7SSOO3BYqoYvLKZl1rZDHS9RWLAxa8nDqNhiV0OGAiUtd9fplVgV6sE/exec';
 // ══════════════════════════════════════════════════════════════════
 
-var PRODUCTOS  = [];
-var CATEGORIAS = [];
+var PRODUCTOS        = [];
+var CATEGORIAS       = [];
+var _datosListos     = false;   // bandera: true cuando getDatos terminó OK
 
-// Cargar datos iniciales al arrancar la página
-(function cargarDatos() {
+// ── Bloquear botón Continuar hasta tener datos ──────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  var btnCont = document.getElementById('btn-continuar');
+  if (btnCont) {
+    btnCont.disabled = true;
+    btnCont.setAttribute('data-loading', '1');
+  }
+  // Mostrar indicador de carga en pantalla bienvenida
+  var bvBox = document.querySelector('.bv-box');
+  if (bvBox) {
+    var ind = document.createElement('div');
+    ind.id  = 'datos-cargando';
+    ind.style.cssText = 'font-size:12px;color:rgba(255,255,255,.7);font-family:Arial,sans-serif;margin-top:10px;text-align:center';
+    ind.textContent = '⏳ Cargando catálogo...';
+    bvBox.appendChild(ind);
+  }
+  cargarDatos();
+});
+
+function cargarDatos() {
   fetch(APPS_SCRIPT_URL + '?action=getDatos')
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      PRODUCTOS  = d.productos  || [];
-      CATEGORIAS = d.categorias || [];
+    .then(function(r){
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
     })
-    .catch(function(){ console.error('Error al cargar datos de la tienda'); });
-})();
+    .then(function(d){
+      PRODUCTOS      = d.productos  || [];
+      CATEGORIAS     = d.categorias || [];
+      _datosListos   = true;
+      // Quitar indicador de carga
+      var ind = document.getElementById('datos-cargando');
+      if (ind) ind.remove();
+      // Habilitar botón Continuar solo si ya eligió sucursal
+      var btnCont = document.getElementById('btn-continuar');
+      if (btnCont) {
+        btnCont.removeAttribute('data-loading');
+        // Solo habilitar si ya hay sucursal seleccionada
+        if (document.querySelector('.suc-btn.sel')) {
+          btnCont.disabled = false;
+        }
+      }
+    })
+    .catch(function(err){
+      console.error('Error cargando datos:', err);
+      var ind = document.getElementById('datos-cargando');
+      if (ind) {
+        ind.style.color = '#ff9999';
+        ind.textContent = '❌ Error al cargar catálogo. Recarga la página.';
+      }
+    });
+}
 // ═══════════════════════════════════════════════════════════
 //  ESTADO GLOBAL
 // ═══════════════════════════════════════════════════════════
@@ -779,7 +819,11 @@ function selSuc(btn, suc) {
 document.querySelectorAll('.suc-btn').forEach(function(b){ b.classList.remove('sel'); });
 btn.classList.add('sel');
 sucursal = suc;
-document.getElementById('btn-continuar').disabled = false;
+// Solo habilitar Continuar si los datos ya cargaron
+var btnCont = document.getElementById('btn-continuar');
+if (btnCont && !btnCont.getAttribute('data-loading')) {
+  btnCont.disabled = false;
+}
 }
 function entrarTienda() {
 // V4: actualizar stock según sucursal antes de mostrar tienda
