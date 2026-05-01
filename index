@@ -737,7 +737,7 @@ Continuar con mi pedido →
 //     (Menú Implementar → Nueva implementación → Aplicación web →
 //      Copiar URL generada y pégala aquí)
 // ══════════════════════════════════════════════════════════════════
-var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzCvgpiuHAoZOrmXoxCvn1qagigx28IRovsG_zLvkJmKZUftGMf7kvH4RsdcBZaWBBR/exec';
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx1s4EapgBVYGE8c7UpGlraD06-yqoZBz3pXOsnyoOsjyf1mQOeLaDTZAh4qBTQ38M/exec';
 // ══════════════════════════════════════════════════════════════════
 
 var PRODUCTOS  = [];
@@ -833,11 +833,8 @@ function abrirWA() { document.getElementById('wa-modal').classList.add('open'); 
 function cerrarWA() { document.getElementById('wa-modal').classList.remove('open'); }
 function aceptarWA() {
 var d = JSON.stringify({ sucursal: sucursal, notas: 'Contacto via WhatsApp desde tienda' });
-fetch(APPS_SCRIPT_URL + '?action=registrarContactoWA', {
-method: 'POST',
-headers: { 'Content-Type': 'text/plain' },
-body: d
-}).catch(function(){});
+fetch(APPS_SCRIPT_URL + '?action=registrarContactoWA&payload=' + encodeURIComponent(d))
+.catch(function(){});
 cerrarWA();
 window.open('https://api.whatsapp.com/send?phone=5215579248882&text=Hola!!%20Estoy%20interesada%20en%20un%20arreglo%20de%20flores%F0%9F%92%90y%2Fo%20globos%F0%9F%8E%88%E2%80%A6','_blank');
 }
@@ -1592,11 +1589,7 @@ tienePersonalizado:tieneP, carrito:carrito,
 enviosPorProducto:enviosProd
 };
 document.getElementById('loader').classList.add('show');
-fetch(APPS_SCRIPT_URL + '?action=procesarPedido', {
-method: 'POST',
-headers: { 'Content-Type': 'text/plain' },
-body: JSON.stringify(datos)
-})
+fetch(APPS_SCRIPT_URL + '?action=procesarPedido&payload=' + encodeURIComponent(JSON.stringify(datos)))
 .then(function(response){ return response.text(); })
 .then(function(res) {
 document.getElementById('loader').classList.remove('show');
