@@ -738,7 +738,7 @@ Continuar con mi pedido →
 // ══════════════════════════════════════════════════════════════════
 // ⚙️  URL DE APPS SCRIPT — YA CONFIGURADA
 // ══════════════════════════════════════════════════════════════════
-var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwdpuecKghI_U8WXi24oM9nAbZ9UDgTq2KOzu2_MxaCZTrCpaK2lkVGFZLmftqzLsS3eA/exec';
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUKdYepJm-pzQMEx0B52MDoKMyafqfgGHZYf5ugpBz52M_Wm0Nkup0sQQ4yd9cwstHyg/exec';
 // ══════════════════════════════════════════════════════════════════
 var PRODUCTOS        = [];
 var CATEGORIAS       = [];
@@ -1104,7 +1104,11 @@ return subHtml+'<div class="prod-grid" id="prod-grid-'+catIdx+'">'+
 }
 function buildProdCard(p, catNombre) {
 var img    = p.imagen || 'https://i.postimg.cc/8zL8DB99/MAIA.jpg';
-var precio = p.precio > 0 ? '$' + p.precio.toFixed(2) : 'Por cotizar';
+// ── DESCUENTO: leer flags del producto ──
+var tieneDesc   = !!(p.tieneDescuento && p.precioDescuento > 0);
+var precioOrig  = p.precio || 0;
+var precioFinal = tieneDesc ? p.precioDescuento : precioOrig;
+var precio      = precioOrig > 0 ? '$' + precioOrig.toFixed(2) : 'Por cotizar';
 // V8: opciones disponibles para cualquier módulo que las tenga en hoja 7
 var esOcasion = p.numOpciones > 0;
 // V4: stock según sucursal
@@ -1141,7 +1145,10 @@ expandirBtn+
 '</div>'+
 '<div class="prod-body">'+
 '<div class="prod-desc">'+p.descripcion+'</div>'+
-'<div class="prod-precio">'+precio+'</div>'+
+(tieneDesc
+? '<div class="prod-precio"><span class="prod-precio-original">'+precio+'</span><span class="prod-precio-desc"> $'+p.precioDescuento.toFixed(2)+'</span><span class="prod-badge-desc">OFERTA</span></div>'
+: '<div class="prod-precio">'+precio+'</div>'
+)+
 stockHtml+
 opcsHtml+
 '<div class="prod-footer">'+
