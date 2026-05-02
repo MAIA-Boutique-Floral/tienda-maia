@@ -197,9 +197,6 @@ font-family:Arial,sans-serif;letter-spacing:1px}
 .prod-body{padding:10px 12px;flex:1;display:flex;flex-direction:column}
 .prod-desc{color:var(--texto);font-size:12px;flex:1;margin-bottom:5px;line-height:1.45}
 .prod-precio{color:var(--viola);font-size:15px;font-weight:700;margin-bottom:4px}
-.prod-precio-original{font-size:13px;font-weight:600;color:#aaa;text-decoration:line-through;margin-right:6px;font-family:Arial,sans-serif}
-.prod-precio-desc{font-size:18px;font-weight:900;color:#c0392b;font-family:Georgia,serif}
-.prod-badge-desc{display:inline-block;background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;letter-spacing:1px;font-family:Arial,sans-serif;vertical-align:middle;margin-left:4px}
 /* V4: stock badge */
 .prod-stock{font-size:10px;font-family:Arial,sans-serif;font-weight:700;
 padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:6px}
@@ -738,7 +735,7 @@ Continuar con mi pedido →
 // ══════════════════════════════════════════════════════════════════
 // ⚙️  URL DE APPS SCRIPT — YA CONFIGURADA
 // ══════════════════════════════════════════════════════════════════
-var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUKdYepJm-pzQMEx0B52MDoKMyafqfgGHZYf5ugpBz52M_Wm0Nkup0sQQ4yd9cwstHyg/exec';
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjz93jwDrz9oX9Z7_kLyGrJ1d0MGMAiCctKgZyocdhiULAyfuYNstv0nJJ1idrk236pg/exec';
 // ══════════════════════════════════════════════════════════════════
 var PRODUCTOS        = [];
 var CATEGORIAS       = [];
@@ -1104,11 +1101,7 @@ return subHtml+'<div class="prod-grid" id="prod-grid-'+catIdx+'">'+
 }
 function buildProdCard(p, catNombre) {
 var img    = p.imagen || 'https://i.postimg.cc/8zL8DB99/MAIA.jpg';
-// ── DESCUENTO: leer flags del producto ──
-var tieneDesc   = !!(p.tieneDescuento && p.precioDescuento > 0);
-var precioOrig  = p.precio || 0;
-var precioFinal = tieneDesc ? p.precioDescuento : precioOrig;
-var precio      = precioOrig > 0 ? '$' + precioOrig.toFixed(2) : 'Por cotizar';
+var precio = p.precio > 0 ? '$' + p.precio.toFixed(2) : 'Por cotizar';
 // V8: opciones disponibles para cualquier módulo que las tenga en hoja 7
 var esOcasion = p.numOpciones > 0;
 // V4: stock según sucursal
@@ -1145,10 +1138,7 @@ expandirBtn+
 '</div>'+
 '<div class="prod-body">'+
 '<div class="prod-desc">'+p.descripcion+'</div>'+
-(tieneDesc
-? '<div class="prod-precio"><span class="prod-precio-original">'+precio+'</span><span class="prod-precio-desc"> $'+p.precioDescuento.toFixed(2)+'</span><span class="prod-badge-desc">OFERTA</span></div>'
-: '<div class="prod-precio">'+precio+'</div>'
-)+
+'<div class="prod-precio">'+precio+'</div>'+
 stockHtml+
 opcsHtml+
 '<div class="prod-footer">'+
@@ -1220,11 +1210,8 @@ if (el && el.value.trim()) opcsElegidas.push(opt+': '+el.value.trim());
 });
 }
 var existe = carrito.findIndex(function(it){ return it._prodId == id; });
-// Usar precio con descuento si aplica
-var _precioUnit = (p.tieneDescuento && p.precioDescuento > 0) ? p.precioDescuento : p.precio;
 var item = { _prodId:id, tipo:catNombre, descripcion:p.descripcion,
-precio: _precioUnit>0?_precioUnit*qty:0, precioUnit:_precioUnit, cantidad:qty,
-precioOriginal: p.precio, tieneDescuento: p.tieneDescuento||false,
+precio: p.precio>0?p.precio*qty:0, precioUnit:p.precio, cantidad:qty,
 imagen:p.imagen, personalizacion:null, opcionesElegidas:opcsElegidas };
 if (existe >= 0) carrito[existe] = item; else carrito.push(item);
 var card = document.getElementById('prodcard-'+id);
@@ -1286,11 +1273,7 @@ if(item.opcionesElegidas && item.opcionesElegidas.length)
 det+='<div class="ci-detalle">'+item.opcionesElegidas.join(' | ')+'</div>';
 var pTxt = item.precio>0?'$'+item.precio.toFixed(2):'Por cotizar';
 // V4: mostrar cantidad x precio unitario
-var qtyPrecio = item.precioUnit>0
-? (item.tieneDescuento && item.precioOriginal
-  ? '<div class="ci-qty-precio">x'+item.cantidad+' × <span style="text-decoration:line-through;color:#bbb;font-size:11px">$'+item.precioOriginal.toFixed(2)+'</span> <span style="color:#c0392b;font-weight:900">$'+item.precioUnit.toFixed(2)+'</span></div>'
-  : '<div class="ci-qty-precio">x'+item.cantidad+' × $'+item.precioUnit.toFixed(2)+'</div>')
-: '';
+var qtyPrecio = item.precioUnit>0 ? '<div class="ci-qty-precio">x'+item.cantidad+' × $'+item.precioUnit.toFixed(2)+'</div>' : '';
 return '<div class="cart-item">'+
 '<img class="ci-img" src="'+(item.imagen||'')+'" alt="" onerror="this.src=\'https://i.postimg.cc/8zL8DB99/MAIA.jpg\'">'+
 '<div class="ci-info"><div class="ci-tipo">'+item.tipo+'</div>'+
@@ -1799,3 +1782,5 @@ function cerrarAviso() { document.getElementById('modal-aviso').classList.remove
 </script>
 </body>
 </html>
+
+
