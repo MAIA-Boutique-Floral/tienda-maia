@@ -197,6 +197,9 @@ font-family:Arial,sans-serif;letter-spacing:1px}
 .prod-body{padding:10px 12px;flex:1;display:flex;flex-direction:column}
 .prod-desc{color:var(--texto);font-size:12px;flex:1;margin-bottom:5px;line-height:1.45}
 .prod-precio{color:var(--viola);font-size:15px;font-weight:700;margin-bottom:4px}
+.prod-precio-original{font-size:13px;font-weight:600;color:#aaa;text-decoration:line-through;margin-right:6px;font-family:Arial,sans-serif}
+.prod-precio-desc{font-size:18px;font-weight:900;color:#c0392b;font-family:Georgia,serif}
+.prod-badge-desc{display:inline-block;background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;letter-spacing:1px;font-family:Arial,sans-serif;vertical-align:middle;margin-left:4px}
 /* V4: stock badge */
 .prod-stock{font-size:10px;font-family:Arial,sans-serif;font-weight:700;
 padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:6px}
@@ -464,7 +467,7 @@ footer a{color:var(--rosa);text-decoration:none}
 <h1 class="bv-titulo maia-font">MAIA</h1>
 <p class="bv-sub">📍 Tecámac · Ecatepec &nbsp;|&nbsp; 📱 55 7924 8882</p>
 <div class="bv-box">
-<h3>¡BIENVENIDA! Selecciona tu sucursal</h3>
+<h3>¡BIENVENIDO! Selecciona tu sucursal</h3>
 <!-- V6: 2 sucursales con dirección y horario -->
 <div class="suc-grid">
 <button class="suc-btn" onclick="selSuc(this,'Tecámac')">
@@ -735,7 +738,7 @@ Continuar con mi pedido →
 // ══════════════════════════════════════════════════════════════════
 // ⚙️  URL DE APPS SCRIPT — YA CONFIGURADA
 // ══════════════════════════════════════════════════════════════════
-var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmzgUiLdVgAd8XTvcXXu8RrmaW_w8j8BAGnE3Ydb1FuyPQ-bPsug2b4GJy25XWdmfrfQ/exec';
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyzhA_cM19P5Zx0nkES4yguzbBDg7YNH_o6IMLRW791F69xliImPesolIKbEjkxXYyFYQ/exec';
 // ══════════════════════════════════════════════════════════════════
 var PRODUCTOS        = [];
 var CATEGORIAS       = [];
@@ -1210,8 +1213,11 @@ if (el && el.value.trim()) opcsElegidas.push(opt+': '+el.value.trim());
 });
 }
 var existe = carrito.findIndex(function(it){ return it._prodId == id; });
+// Usar precio con descuento si aplica
+var _precioUnit = (p.tieneDescuento && p.precioDescuento > 0) ? p.precioDescuento : p.precio;
 var item = { _prodId:id, tipo:catNombre, descripcion:p.descripcion,
-precio: p.precio>0?p.precio*qty:0, precioUnit:p.precio, cantidad:qty,
+precio: _precioUnit>0?_precioUnit*qty:0, precioUnit:_precioUnit, cantidad:qty,
+precioOriginal: p.precio, tieneDescuento: p.tieneDescuento||false,
 imagen:p.imagen, personalizacion:null, opcionesElegidas:opcsElegidas };
 if (existe >= 0) carrito[existe] = item; else carrito.push(item);
 var card = document.getElementById('prodcard-'+id);
@@ -1273,7 +1279,11 @@ if(item.opcionesElegidas && item.opcionesElegidas.length)
 det+='<div class="ci-detalle">'+item.opcionesElegidas.join(' | ')+'</div>';
 var pTxt = item.precio>0?'$'+item.precio.toFixed(2):'Por cotizar';
 // V4: mostrar cantidad x precio unitario
-var qtyPrecio = item.precioUnit>0 ? '<div class="ci-qty-precio">x'+item.cantidad+' × $'+item.precioUnit.toFixed(2)+'</div>' : '';
+var qtyPrecio = item.precioUnit>0
+? (item.tieneDescuento && item.precioOriginal
+  ? '<div class="ci-qty-precio">x'+item.cantidad+' × <span style="text-decoration:line-through;color:#bbb;font-size:11px">$'+item.precioOriginal.toFixed(2)+'</span> <span style="color:#c0392b;font-weight:900">$'+item.precioUnit.toFixed(2)+'</span></div>'
+  : '<div class="ci-qty-precio">x'+item.cantidad+' × $'+item.precioUnit.toFixed(2)+'</div>')
+: '';
 return '<div class="cart-item">'+
 '<img class="ci-img" src="'+(item.imagen||'')+'" alt="" onerror="this.src=\'https://i.postimg.cc/8zL8DB99/MAIA.jpg\'">'+
 '<div class="ci-info"><div class="ci-tipo">'+item.tipo+'</div>'+
