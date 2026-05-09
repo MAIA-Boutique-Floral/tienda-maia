@@ -543,7 +543,7 @@ position:relative;overflow:hidden;border-bottom:3px solid #d4a017">
 <!-- V7.1: Botones redes sociales — solo iconos, sin texto, sin leyenda -->
 <div style="background:linear-gradient(135deg,#4a2c4a,#7b4f7b);padding:18px 20px;text-align:center">
 <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">
-<a href="https://marsrprogramacion-design.github.io/maia-whatsapp/?src=bio" target="_blank" rel="noopener" title="WhatsApp"
+<a href="https://maia-boutique-floral.github.io/whatsapp-maia/?src=bio" target="_blank" rel="noopener" title="WhatsApp"
 style="display:inline-flex;align-items:center;justify-content:center;
 background:linear-gradient(135deg,#d4699a,#e8a0b4);
 color:#fff;text-decoration:none;width:46px;height:46px;border-radius:50%;
@@ -598,7 +598,7 @@ Todos los derechos reservados por © 2026 MAIA &nbsp;|&nbsp;
 </div>
 <div class="wa-modal-body">
 <h3>¿Deseas contactarnos por WhatsApp?</h3>
-<p>Te redirigiremos a WhatsApp donde podrás enviarnos un mensaje directo sobre tu arreglo de flores o globos 🌷🎈</p>
+<p>Te redirigiremos a WhatsApp donde podrás enviarnos un mensaje sobre tu arreglo 🌷🎈</p><div style="margin:14px 0 6px"><input type="tel" id="wa-celular" placeholder="📱 Celular" style="width:100%;padding:10px 12px;border:1.5px solid #e0d0e0;border-radius:10px;font-size:14px;font-family:Arial,sans-serif;outline:none;box-sizing:border-box;margin-bottom:8px" oninput="this.style.borderColor=this.value?'#27ae60':'#e0d0e0'"><input type="text" id="wa-nombre" placeholder="🌸 Nombre" style="width:100%;padding:10px 12px;border:1.5px solid #e0d0e0;border-radius:10px;font-size:14px;font-family:Arial,sans-serif;outline:none;box-sizing:border-box" oninput="this.style.borderColor=this.value?'#27ae60':'#e0d0e0'"></div><p style="font-size:11px;color:#aaa;text-align:center;margin-bottom:4px;font-family:Arial,sans-serif">Déjanos tu info y te contactamos más rápido 💜</p>
 <div class="wa-btns">
 <button class="wa-btn-cerrar" onclick="cerrarWA()">Cerrar</button>
 <button class="wa-btn-aceptar" onclick="aceptarWA()">Aceptar ✓</button>
@@ -738,7 +738,7 @@ Continuar con mi pedido →
 // ══════════════════════════════════════════════════════════════════
 // ⚙️  URL DE APPS SCRIPT — YA CONFIGURADA
 // ══════════════════════════════════════════════════════════════════
-var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEWvzctDIA_9ad7LbdSAYGNFipcoDne9zuX7uDBuL1ZBkuV3BdmSazdKkfQEye01td4A/exec';
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4-nkQhpsFQz9NuKQvpw7zfGrZrHeIhNno1DrEKQnL359bY1RGhLoBV9yb98rO9guz/exec';
 // ══════════════════════════════════════════════════════════════════
 var PRODUCTOS        = [];
 var CATEGORIAS       = [];
@@ -876,14 +876,14 @@ el.className = 'prod-stock no-disponible';
 function abrirWA() { document.getElementById('wa-modal').classList.add('open'); }
 function cerrarWA() { document.getElementById('wa-modal').classList.remove('open'); }
 function aceptarWA() {
-var d = JSON.stringify({ sucursal: sucursal, notas: 'Contacto via WhatsApp desde tienda' });
+var celular = (document.getElementById('wa-celular')||{}).value||''; var nombre = (document.getElementById('wa-nombre')||{}).value||''; var d = JSON.stringify({ sucursal: sucursal, celular: celular, nombre: nombre, notas: 'Contacto via WhatsApp desde tienda' });
 fetch(APPS_SCRIPT_URL, {
   method: 'POST',
   mode: 'no-cors',
   headers: { 'Content-Type': 'application/json' },
   body: d
 }).catch(function(){});
-cerrarWA();
+cerrarWA(); var ci=document.getElementById('wa-celular'); var cn=document.getElementById('wa-nombre'); if(ci){ci.value='';ci.style.borderColor='#e0d0e0';} if(cn){cn.value='';cn.style.borderColor='#e0d0e0';}
 window.open('https://api.whatsapp.com/send?phone=5215579248882&text=Hola!!%20Estoy%20interesada%20en%20un%20arreglo%20de%20flores%F0%9F%92%90y%2Fo%20globos%F0%9F%8E%88%E2%80%A6','_blank');
 }
 // ═══════════════════════════════════════════════════════════
@@ -1799,3 +1799,5 @@ function cerrarAviso() { document.getElementById('modal-aviso').classList.remove
 </script>
 </body>
 </html>
+
+
